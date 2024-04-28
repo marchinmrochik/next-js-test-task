@@ -10,7 +10,7 @@ export const usePersonData = (selectedPerson: Person) => {
     const [starshipsNode, setStarshipsNode] = useState<StarshipMap | null>(null);
 
     const filmsNode = useMemo(() => {
-        if (!selectedPerson) {
+        if (!selectedPerson || !films.length) {
             return [];
         }
 
