@@ -43,7 +43,15 @@ export async function collectUniqueUrlsByFilmId(data: DataProps[]) {
                         result[starshipId].films.push(filmId);
                     }
                 } catch (error) {
-                    console.error(`Failed to fetch data from ${url}:`, error);
+                    let errorMessage: string;
+                    if (typeof error === 'string') {
+                        errorMessage = error;
+                    } else if (error instanceof Error) {
+                        errorMessage = error.message;
+                    } else {
+                        errorMessage = 'An unknown error occurred';
+                    }
+                    return errorMessage
                 }
             })
         );

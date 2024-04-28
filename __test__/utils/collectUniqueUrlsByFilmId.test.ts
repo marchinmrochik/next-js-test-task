@@ -1,12 +1,12 @@
 import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { collectUniqueUrlsByFilmId } from './collectUniqueUrlsByFilmId'; // Замените на путь к вашему файлу
+import { collectUniqueUrlsByFilmId } from '@/utils/collectUniqueUrlsByFilmId';
 
-const mockAxios = new MockAdapter(axios);
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('collectUniqueUrlsByFilmId', () => {
     beforeEach(() => {
-        mockAxios.reset();
+        mockedAxios.get.mockReset();
     });
 
     it('collects and processes starship data correctly', async () => {
@@ -16,15 +16,9 @@ describe('collectUniqueUrlsByFilmId', () => {
             { filmId: 2, url: 'http://example.com/starship/3' },
         ];
 
-        mockAxios
-            .onGet('http://example.com/starship/1')
-            .reply(200, { id: 1, name: 'Starship 1', model: 'Model 1' });
-        mockAxios
-            .onGet('http://example.com/starship/2')
-            .reply(200, { id: 2, name: 'Starship 2', model: 'Model 2' });
-        mockAxios
-            .onGet('http://example.com/starship/3')
-            .reply(200, { id: 3, name: 'Starship 3', model: 'Model 3' });
+        mockedAxios.get.mockResolvedValueOnce({ data: { id: 1, name: 'Starship 1', model: 'Model 1' }});
+        mockedAxios.get.mockResolvedValueOnce({ data: { id: 2, name: 'Starship 2', model: 'Model 2' }});
+        mockedAxios.get.mockResolvedValueOnce({ data: { id: 3, name: 'Starship 3', model: 'Model 3' }});
 
         const result = await collectUniqueUrlsByFilmId(data);
 
@@ -38,7 +32,7 @@ describe('collectUniqueUrlsByFilmId', () => {
     it('handles API request failures gracefully', async () => {
         const data = [{ filmId: 1, url: 'http://example.com/starship/1' }];
 
-        mockAxios.onGet('http://example.com/starship/1').reply(404);
+        mockedAxios.get.mockRejectedValueOnce(new Error('Request failed'));
 
         const result = await collectUniqueUrlsByFilmId(data);
 

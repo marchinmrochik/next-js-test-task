@@ -7,7 +7,8 @@ interface PersonCardProps {
 
 const PersonCard = ({ person }: PersonCardProps) => {
     return (
-        <div className="bg-orange-400 p-4 rounded-lg block">
+        <div className="bg-orange-400 p-4 rounded-lg block"
+             data-testid={`person-card-${person.id}`}>
             <Link href={`/person/${person.id}`}>
                 <h2 className="text-xl font-bold mb-2">{person.name}</h2>
                 <p>Height: {person.height}</p>
