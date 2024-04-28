@@ -1,5 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
-import { act } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import usePeopleData from '@/hooks/useFetchPeople';
 import {mockPeople} from "@/__test__/mockData";
@@ -22,31 +21,31 @@ describe('usePeopleData', () => {
 
         mockedAxios.get.mockResolvedValueOnce({ data: responseData });
 
-        const { result, waitForNextUpdate } = renderHook(() => usePeopleData());
+        const { result } = renderHook(() => usePeopleData());
 
         expect(result.current.isLoading).toBe(true);
 
-        await waitForNextUpdate();
-
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.people).toEqual(responseData.results);
-        expect(result.current.loadNextPage).toBeDefined();
-        expect(result.current.error).toBeNull();
+        await waitFor(() => {
+            expect(result.current.isLoading).toBe(false);
+            expect(result.current.people).toEqual(responseData.results);
+            expect(result.current.loadNextPage).toBeDefined();
+            expect(result.current.error).toBeNull();
+        });
     });
 
     test('should handle error and not update state on failed response', async () => {
         const errorMessage = 'Network Error';
         mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
 
-        const { result, waitForNextUpdate } = renderHook(() => usePeopleData());
+        const { result } = renderHook(() => usePeopleData());
 
         expect(result.current.isLoading).toBe(true);
 
-        await waitForNextUpdate();
-
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.people).toEqual([]);
-        expect(result.current.error).toBe(errorMessage)
+        await waitFor(() => {
+            expect(result.current.isLoading).toBe(false);
+            expect(result.current.people).toEqual([]);
+            expect(result.current.error).toBe(errorMessage)
+        })
     });
 
     test('should load next page successfully', async () => {
@@ -59,14 +58,14 @@ describe('usePeopleData', () => {
 
         mockedAxios.get.mockResolvedValueOnce({ data: responseData });
 
-        const { result, waitForNextUpdate } = renderHook(() => usePeopleData());
+        const { result } = renderHook(() => usePeopleData());
 
-        await waitForNextUpdate();
-
-        mockedAxios.get.mockResolvedValueOnce({
-            data:
-                { count: 1, next: null, previous: null, results: [] }
-        });
+        await waitFor(() => {
+            mockedAxios.get.mockResolvedValueOnce({
+                data:
+                    {count: 1, next: null, previous: null, results: []}
+            });
+        })
 
         act(() => {
             result.current.loadNextPage();
@@ -74,10 +73,10 @@ describe('usePeopleData', () => {
 
         expect(result.current.isLoading).toBe(true);
 
-        await waitForNextUpdate();
-
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.people).toEqual([...mockPeople, ...[]]);
-        expect(result.current.error).toBeNull();
+        await waitFor(() => {
+            expect(result.current.isLoading).toBe(false);
+            expect(result.current.people).toEqual([...mockPeople, ...[]]);
+            expect(result.current.error).toBeNull();
+        })
     });
 });
