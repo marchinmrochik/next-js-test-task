@@ -16,11 +16,8 @@ export default function Home() {
             <div className="container mx-auto mt-4 no-scrollbar overflow-y-auto max-h-screen content-container"
                  data-testid="content-container"
                  ref={containerRef}>
-                 {
-                     isLoading ?
-                         <p className="text-center my-4">Loading...</p>
-                         :  <PeopleList people={people}/>
-                 }
+                <PeopleList people={people}/>
+                { isLoading && <p className="text-center my-4">Loading...</p> }
             </div>
         </main>
     );

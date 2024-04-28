@@ -11,7 +11,7 @@ import {
     STARSHIP_X_INCREMENT, STARSHIP_Y_INCREMENT
 } from "@/utils/constants";
 
-export const useGraphData = (filmsNode: Film[], starshipsNode: StarshipMap | null, selectedPerson: Person) => {
+export const useGraphData = (filmsNode: Film[], starshipsNode: StarshipMap | null, selectedPerson: Person | null) => {
     const getGraphData = () => {
         if (!selectedPerson) {
             return { nodes: [], edges: [] };
